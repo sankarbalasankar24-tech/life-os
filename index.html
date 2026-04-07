@@ -4,9 +4,11 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#0d0f18"/>
+<meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <title>Life OS</title>
-<link rel="manifest" href="manifest.json"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>"/>
+<link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkxpZmUgT1MiLAogICJzaG9ydF9uYW1lIjogIkxpZmUgT1MiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzBkMGYxOCIsCiAgInRoZW1lX2NvbG9yIjogIiMwZDBmMTgiLAogICJkZXNjcmlwdGlvbiI6ICJQZXJzb25hbCBsaWZlIG9yZ2FuaXNlciIKfQ=="/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -257,7 +259,7 @@ textarea{resize:none;line-height:1.6}
 <div id="bottom-sheet"><div class="sheet-handle"></div><div id="sheet-inner"></div></div>
 <div id="toast"></div>
 <script>
-// ── CONFIG & STATE ────────────────────────────────────────────
+// CONFIG & STATE
 const CFG={scriptUrl:localStorage.getItem('scriptUrl')||'',vapidKey:localStorage.getItem('vapidKey')||''};
 const S={screen:'today',tasks:[],goals:[],finPeriod:'day',finTab:'overview',
   taskFilter:'pending',categories:{Income:[],Expense:[]},accounts:[],stocks:[],mf:[],finance:null};
@@ -284,7 +286,7 @@ const CAT_ICONS={Food:'🍛',Transport:'🚗',Shopping:'🛍️',Health:'💊',B
   'Personal care':'🧴',Other:'📦',Salary:'💼',Freelance:'💻','Investment returns':'📈',
   Business:'🏢',Gift:'🎁',Bonus:'💎','Other income':'💵'};
 
-// ── API ───────────────────────────────────────────────────────
+// API
 async function api(action,params={}){
   if(!CFG.scriptUrl){return null;}
   try{const r=await fetch(CFG.scriptUrl+'?action='+action+'&'+new URLSearchParams(params));return await r.json();}
@@ -296,7 +298,7 @@ async function apiPost(action,data={}){
   catch(e){showToast('Connection error');return null;}
 }
 
-// ── NAVIGATION ────────────────────────────────────────────────
+// NAVIGATION
 function goto(s){
   document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
@@ -311,7 +313,7 @@ function goto(s){
   if(s==='more')renderSettings();
 }
 
-// ── OVERDUE ENGINE ────────────────────────────────────────────
+// OVERDUE ENGINE
 function daysOverdue(t){
   if(t.Status==='Done'||!t.DueDate||t.DueDate==='someday')return 0;
   const due=new Date(t.DueDate),now=new Date();
@@ -328,13 +330,13 @@ function effPrio(t){
 }
 function ovClass(d){return d>=7?'ov7':d>=3?'ov3':d>=1?'ov1':'';}
 function ovLabel(d){
-  if(d>=7)return'<span class="ob ob7">🔥 '+d+'d overdue — urgent!</span>';
+  if(d>=7)return'<span class="ob ob7">🔥 '+d+'d overdue  -  urgent!</span>';
   if(d>=3)return'<span class="ob ob3">⚠️ '+d+'d overdue</span>';
   if(d>=1)return'<span class="ob ob1">⏰ '+d+'d overdue</span>';
   return'';
 }
 
-// ── PIE CHART ─────────────────────────────────────────────────
+// PIE CHART
 function buildPie(data,r,cx,cy){
   cx=cx||r+4;cy=cy||r+4;
   const tot=data.reduce((s,d)=>s+d.v,0);
@@ -374,7 +376,7 @@ function renderPie(elId,data){
     '</div></div>';
 }
 
-// ── TODAY ─────────────────────────────────────────────────────
+// TODAY
 async function loadToday(){
   const el=document.getElementById('today-content');
   if(!CFG.scriptUrl){el.innerHTML=configPrompt();document.getElementById('today-sub').textContent='Setup required';return;}
@@ -449,7 +451,7 @@ async function loadToday(){
   if(expCats.length)renderPie('today-pie',expCats);
 }
 
-// ── TASKS ─────────────────────────────────────────────────────
+// TASKS
 async function loadTasks(){
   const d=await api('getTasks');
   if(!d)return;
@@ -518,7 +520,7 @@ async function toggleTask(id,ns){
     if(S.screen==='today')loadToday();}
 }
 
-// ── GOALS ─────────────────────────────────────────────────────
+// GOALS
 async function loadGoals(){
   const d=await api('getGoals');const el=document.getElementById('goals-content');
   if(!d||!d.length){el.innerHTML='<div class="empty"><div class="empty-icon">🎯</div><div class="empty-text">No goals yet. Tap + to add your first.</div></div>';return;}
@@ -547,7 +549,7 @@ async function loadGoals(){
     '</div>').join('');
 }
 
-// ── FINANCE ───────────────────────────────────────────────────
+// FINANCE
 async function loadFinance(){
   const[fd,cats,accs,stocks,mf]=await Promise.all([
     api('getFinance',{period:S.finPeriod}),
@@ -727,7 +729,7 @@ function renderFinMF(){
     '<button class="btn-ghost" onclick="openAddMF()" style="margin-top:4px">+ Add mutual fund</button></div>';
 }
 
-// ── JOURNAL ───────────────────────────────────────────────────
+// JOURNAL
 async function loadJournal(){const d=await api('getJournal');renderJList(Array.isArray(d)?d:[]);}
 function renderJList(e){
   const el=document.getElementById('journal-content');
@@ -739,7 +741,7 @@ function renderJList(e){
 }
 async function searchJournal(q){if(!q.trim()){loadJournal();return;}const d=await api('getJournal',{q});renderJList(Array.isArray(d)?d:[]);}
 
-// ── SETTINGS ─────────────────────────────────────────────────
+// SETTINGS
 function renderSettings(){
   document.getElementById('more-content').innerHTML=
     '<div class="settings-section" style="margin-top:8px">'+
@@ -757,9 +759,9 @@ function renderSettings(){
     '<div style="padding:14px 18px;color:var(--muted);font-size:12px;line-height:1.8">Life OS v3<br><span style="color:var(--faint)">Open in Chrome \u2192 \u22EE \u2192 Add to Home screen to install.</span></div>';
 }
 function saveSettings(){CFG.scriptUrl=document.getElementById('inp-url').value.trim();localStorage.setItem('scriptUrl',CFG.scriptUrl);showToast('✅ Saved!');}
-async function testConn(){showToast('Testing...');const r=await api('getStats');showToast(r?'✅ Connected!':'❌ Failed — check URL');}
+async function testConn(){showToast('Testing...');const r=await api('getStats');showToast(r?'✅ Connected!':'❌ Failed  -  check URL');}
 
-// ── FAB DISPATCHER ────────────────────────────────────────────
+// FAB DISPATCHER
 function openAddSheet(){
   const s=S.screen;
   if(s==='today'||s==='tasks')openAddTask();
@@ -769,7 +771,7 @@ function openAddSheet(){
   else openAddTask();
 }
 
-// ── ADD TASK ──────────────────────────────────────────────────
+// ADD TASK
 let _due='';
 function openAddTask(gid,gt){
   _due='';
@@ -809,7 +811,7 @@ async function submitTask(gid){
     if(gid)loadGoals();else{loadTasks();loadToday();}}
 }
 
-// ── ADD GOAL ──────────────────────────────────────────────────
+// ADD GOAL
 let _gt={type:'someday',date:'someday'};
 function openAddGoal(){
   _gt={type:'someday',date:'someday'};
@@ -843,7 +845,7 @@ async function submitGoal(){
 }
 function openAddSubTask(gid,gt){openAddTask(gid,gt);}
 
-// ── ADD FINANCE ───────────────────────────────────────────────
+// ADD FINANCE
 let _ft='Expense';
 async function openAddFinance(){
   await ensureCats();
@@ -870,7 +872,7 @@ async function submitFin(){
   if(r?.ok){closeSheet();showToast('💰 Added!');loadFinance();}
 }
 
-// ── ADD STOCK ─────────────────────────────────────────────────
+// ADD STOCK
 function openAddStock(){
   document.getElementById('sheet-inner').innerHTML=
     '<div class="sheet-title">Buy stock / add position</div>'+
@@ -925,7 +927,7 @@ async function submitSell(id){
     loadFinance();}
 }
 
-// ── ADD MF ────────────────────────────────────────────────────
+// ADD MF
 function openAddMF(){
   document.getElementById('sheet-inner').innerHTML=
     '<div class="sheet-title">Add mutual fund</div>'+
@@ -946,7 +948,7 @@ async function submitMF(){
   if(r?.ok){closeSheet();showToast('✅ Fund added!');loadFinance();}
 }
 
-// ── ADD JOURNAL ───────────────────────────────────────────────
+// ADD JOURNAL
 function openAddJournal(){
   document.getElementById('sheet-inner').innerHTML=
     '<div class="sheet-title">New journal entry</div>'+
@@ -965,7 +967,7 @@ async function submitJournal(){
   if(r?.ok){closeSheet();showToast('📖 Saved!');loadJournal();}
 }
 
-// ── NIGHT LOG ─────────────────────────────────────────────────
+// NIGHT LOG
 function openNightLog(){
   document.getElementById('sheet-inner').innerHTML=
     '<div class="sheet-title">🌙 End-of-day log</div>'+
@@ -985,7 +987,7 @@ async function submitNightLog(){
   if(r?.ok){closeSheet();showToast('✨ Day logged!');}
 }
 
-// ── CATEGORY EDITOR ───────────────────────────────────────────
+// CATEGORY EDITOR
 let _catTab='Expense';
 async function openCatEditor(){
   await ensureCats();
@@ -1027,7 +1029,7 @@ async function delCat(t,n){
     document.getElementById('cl-'+t).innerHTML=catLH(t);showToast('🗑️ Removed');}
 }
 
-// ── ACCOUNT EDITOR ────────────────────────────────────────────
+// ACCOUNT EDITOR
 async function openAccEditor(){
   const a=await api('getAccounts')||[];S.accounts=a;
   document.getElementById('sheet-inner').innerHTML=
@@ -1059,7 +1061,7 @@ async function submitAddAcc(){
   if(r?.ok){closeSheet();showToast('✅ Account added!');}
 }
 
-// ── PUSH ──────────────────────────────────────────────────────
+// PUSH
 async function requestPush(){
   if(!('serviceWorker' in navigator)||!('PushManager' in window)){showToast('Push not supported');return;}
   const p=await Notification.requestPermission();if(p!=='granted'){showToast('Permission denied');return;}
@@ -1069,7 +1071,7 @@ async function requestPush(){
   catch(e){showToast('Push setup failed');}
 }
 
-// ── UTILITIES ─────────────────────────────────────────────────
+// UTILITIES
 function isoToday(){return new Date().toISOString().slice(0,10);}
 function isoAdd(n){const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10);}
 function isoMonthEnd(){const d=new Date();return new Date(d.getFullYear(),d.getMonth()+1,0).toISOString().slice(0,10);}
@@ -1087,7 +1089,7 @@ function openSheet(){document.getElementById('sheet-overlay').classList.add('ope
 function closeSheet(){document.getElementById('sheet-overlay').classList.remove('open');document.getElementById('bottom-sheet').classList.remove('open');}
 let _tt;function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),2600);}
 setTimeout(()=>{if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});},3000);
-// Only load data if Script URL is already saved — otherwise show setup screen
+// Only load data if Script URL is already saved  -  otherwise show setup screen
 if(CFG.scriptUrl){
   loadToday();
 }else{
