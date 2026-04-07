@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <title>Life OS</title>
 <link rel="manifest" href="manifest.json"/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -1087,7 +1087,7 @@ async function ensureCats(){if(!S.categories.Income.length&&!S.categories.Expens
 function openSheet(){document.getElementById('sheet-overlay').classList.add('open');document.getElementById('bottom-sheet').classList.add('open');}
 function closeSheet(){document.getElementById('sheet-overlay').classList.remove('open');document.getElementById('bottom-sheet').classList.remove('open');}
 let _tt;function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),2600);}
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+setTimeout(()=>{if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});},3000);
 // Only load data if Script URL is already saved — otherwise show setup screen
 if(CFG.scriptUrl){
   loadToday();
