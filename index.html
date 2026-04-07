@@ -388,7 +388,6 @@ async function loadToday(){
   const[data,stats,finDay]=await Promise.all([
     api('getToday'),api('getStats'),api('getFinance',{period:'day'})
   ]);
-  const el=document.getElementById('today-content');
   if(!data){el.innerHTML=configPrompt();return;}
   const tasks=data.tasks||[],events=data.events||[],memories=data.memories||[];
   const pct=stats?.pct||0;
