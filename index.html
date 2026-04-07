@@ -286,12 +286,12 @@ const CAT_ICONS={Food:'🍛',Transport:'🚗',Shopping:'🛍️',Health:'💊',B
 
 // ── API ───────────────────────────────────────────────────────
 async function api(action,params={}){
-  if(!CFG.scriptUrl){showToast('⚙️ Set Script URL in Settings');return null;}
+  if(!CFG.scriptUrl){return null;}
   try{const r=await fetch(CFG.scriptUrl+'?action='+action+'&'+new URLSearchParams(params));return await r.json();}
   catch(e){showToast('Connection error');return null;}
 }
 async function apiPost(action,data={}){
-  if(!CFG.scriptUrl){showToast('⚙️ Set Script URL in Settings');return null;}
+  if(!CFG.scriptUrl){showToast('⚙️ Set Script URL in Settings → More tab');return null;}
   try{const r=await fetch(CFG.scriptUrl,{method:'POST',body:JSON.stringify({action,data})});return await r.json();}
   catch(e){showToast('Connection error');return null;}
 }
@@ -376,6 +376,8 @@ function renderPie(elId,data){
 
 // ── TODAY ─────────────────────────────────────────────────────
 async function loadToday(){
+  const el=document.getElementById('today-content');
+  if(!CFG.scriptUrl){el.innerHTML=configPrompt();document.getElementById('today-sub').textContent='Setup required';return;}
   const now=new Date();
   const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -1086,7 +1088,13 @@ function openSheet(){document.getElementById('sheet-overlay').classList.add('ope
 function closeSheet(){document.getElementById('sheet-overlay').classList.remove('open');document.getElementById('bottom-sheet').classList.remove('open');}
 let _tt;function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),2600);}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-loadToday();
+// Only load data if Script URL is already saved — otherwise show setup screen
+if(CFG.scriptUrl){
+  loadToday();
+}else{
+  document.getElementById('today-content').innerHTML=configPrompt();
+  document.getElementById('today-sub').textContent='Setup required';
+}
 </script>
 </body>
 </html>
